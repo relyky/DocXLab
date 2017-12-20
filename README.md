@@ -20,3 +20,7 @@
 1. Paragraph 段落的操作
 2. Bookmarks 樣板檔套入
 3. Table 樣板檔套入
+
+# 開發環境
+* Visual Studio 2015
+* .NetFx4.5
