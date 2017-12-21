@@ -10,8 +10,8 @@
 
 # 參考文件
 * [DocX - Home](https://docx.codeplex.com/)
-* [GitHub:xceedsoftware/DocX](https://github.com/xceedsoftware/DocX)
-* [Cathal: Why did you create DocX?](http://cathalscorner.blogspot.tw/2010/06/cathal-why-did-you-create-docx.html)   
+* [GitHub:xceedsoftware/DocX](https://github.com/xceedsoftware/DocX) --- 主要文件
+* [Cathal: Why did you create DocX?](http://cathalscorner.blogspot.tw/2010/06/cathal-why-did-you-create-docx.html)
 採用三個方法實作"hello world"做為比較。這三個方法是[Office Interop libraries],[OOXML SDK],[DocX]。
 * [DocX Samples](https://github.com/xceedsoftware/DocX/tree/master/Examples/Samples)
 * [Programmatically manipulate an Image imbedded inside a DocX document](http://cathalscorner.blogspot.tw/)
