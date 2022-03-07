@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using Xceed.Words.NET;
 
@@ -34,7 +35,7 @@ namespace DocXLab
                 {
                     FontFamily = new Font("微軟正黑體"),
                     FontColor = System.Drawing.Color.Blue,
-                    Size = 8d,                    
+                    Size = 8d,
                 };
 
                 document.InsertParagraph().AppendLine().AppendLine(); // 區隔上下文字段落
@@ -177,7 +178,7 @@ namespace DocXLab
                 p1.Append("案件編號：").Append(info.caseNo).Font(fontN)
                     .AppendLine("爭議金額：").Append(string.Format("NTD${0:N0}元", info.disputeAmt)).Font(fontN)
                     .AppendLine();
-               
+
                 // paragraph 2
                 Paragraph p2 = doc.InsertParagraph();
                 p2.IndentationFirstLine = 1.0f; // 第一行縮排１公分
@@ -215,7 +216,7 @@ namespace DocXLab
                 p2d.IndentationFirstLine = -1.0f;
                 p2d.Append(info.flag4 ? "■" : "□")
                     .Append(" 4.\t其他：")
-                    .Append(info.otherDesc + new string('　', 30 - info.otherDesc.Length)+".").UnderlineStyle(UnderlineStyle.singleLine)
+                    .Append(info.otherDesc + new string('　', 30 - info.otherDesc.Length) + ".").UnderlineStyle(UnderlineStyle.singleLine)
                     .SpacingAfter(10d);
 
                 // tail
@@ -387,7 +388,81 @@ namespace DocXLab
                 // 
                 document.Save();
             }
+        }
 
+        internal static string CreateDocX_SimpleTable3(Stream stream, List<TestResultInfo> testResultList)
+        {
+            try
+            {
+                // Create a document.
+                Font defaultFont = new Font("新細明體"); // 新細明體 微軟正黑體  
+                var defaultColor = System.Drawing.Color.FromArgb(0, 112, 192);
+                using (DocX document = DocX.Create(stream))
+                {
+                    // Add a title
+                    document.InsertParagraph("上傳附件檔")
+                        .Font(defaultFont)
+                        .FontSize(20d)
+                        .Color(defaultColor)
+                        .SpacingBefore(8d)
+                        .SpacingAfter(8d)
+                        .Bold()
+                        .Alignment = Alignment.center;
+
+                    // Add an image into the document.
+                    var imageFolder = new DirectoryInfo(@"C:\GitHubRepos\DocXLab\DocXLab"); // < ------參數化
+                    FileInfo imageFi = new FileInfo(Path.Combine(imageFolder.FullName, "Test_Result.png"));
+                    var image = document.AddImage(imageFi.FullName);
+                    var picture = image.CreatePicture(109, 242);
+
+                    // Add a Table into the document and sets its values.
+                    var t = document.AddTable(testResultList.Count + 1, 3);
+                    t.Design = TableDesign.TableGrid;
+                    t.Alignment = Alignment.center;
+                    t.SetWidthsPercentage(new float[] { 33, 33, 34 }, 600);
+
+                    // fill caption
+                    t.Rows[0].Cells[0].Paragraphs[0].Append("序號")
+                        .Font(defaultFont).Color(defaultColor).FontSize(16d).SpacingBefore(8d).SpacingAfter(8d);
+                    t.Rows[0].Cells[1].Paragraphs[0].Append("姓名")
+                        .Font(defaultFont).Color(defaultColor).FontSize(16d).SpacingBefore(8d).SpacingAfter(8d);
+                    t.Rows[0].Cells[2].Paragraphs[0].Append("篩檢圖片")
+                        .Font(defaultFont).Color(defaultColor).FontSize(16d).SpacingBefore(8d).SpacingAfter(8d);
+
+                    // fill content
+                    int rowIndex = 1;
+                    foreach (var item in testResultList)
+                    {
+                        t.Rows[rowIndex].Cells[0].Paragraphs[0].Append($"{item.ItemSn}")
+                            .Font(defaultFont).Color(defaultColor).FontSize(16d).SpacingBefore(8d).SpacingAfter(8d);
+                        t.Rows[rowIndex].Cells[1].Paragraphs[0].Append(item.Name)
+                            .Font(defaultFont).Color(defaultColor).FontSize(16d).SpacingBefore(8d).SpacingAfter(8d);
+                        t.Rows[rowIndex].Cells[2].Paragraphs[0].AppendPicture(picture)
+                            .Font(defaultFont).Color(defaultColor).FontSize(16d).SpacingBefore(8d).SpacingAfter(8d);
+
+                        // next row
+                        ++rowIndex;
+                    }
+
+                    document.InsertParagraph()
+                        .InsertTableAfterSelf(t);
+
+                    // 
+                    document.Save();
+                    return "SUCCESS";
+                }
+            }
+            catch (Exception ex)
+            {
+                return $"FAIL! {ex.Message}";
+            }
+        }
+
+        internal class TestResultInfo
+        {
+            public string ItemSn { get; set; }
+            public string Name { get; set; }
+            public string TestResult { get; set; }
         }
 
         /// <summary>
